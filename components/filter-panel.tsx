@@ -34,36 +34,39 @@ export function FilterPanel({
     : "All Categories"
 
   return (
-    <div className="sticky top-0 z-10 bg-gray-900/80 backdrop-blur-md p-4 border-b border-gray-800">
+    <div className="sticky top-[72px] z-10 bg-smudged-black/80 backdrop-blur-md p-4 border-b border-bruised-purple/20">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <h2 className="text-xl font-bold text-white">Gallery</h2>
+          <h2 className="text-xl font-playfair font-light text-faded-white opacity-80">Gallery</h2>
 
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <div className="w-full sm:w-auto">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full sm:w-[200px] justify-between">
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-[200px] justify-between bg-deep-blue/50 border-bruised-purple/30 text-faded-white"
+                  >
                     <span className="truncate">{selectedArtistName}</span>
-                    <ChevronDown className="h-4 w-4 ml-2" />
+                    <ChevronDown className="h-4 w-4 ml-2 text-teardrop" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-[200px] bg-gray-900 border-gray-800 text-white">
+                <DropdownMenuContent className="w-[200px] bg-deep-blue border-bruised-purple/30 text-faded-white">
                   <DropdownMenuItem
-                    className={!selectedArtist ? "bg-gray-800" : ""}
+                    className={!selectedArtist ? "bg-bruised-purple/20" : ""}
                     onClick={() => onArtistChange(null)}
                   >
                     <span className="flex-1">All Artists</span>
-                    {!selectedArtist && <Check className="h-4 w-4 ml-2" />}
+                    {!selectedArtist && <Check className="h-4 w-4 ml-2 text-teardrop" />}
                   </DropdownMenuItem>
                   {artists.map((artist) => (
                     <DropdownMenuItem
                       key={artist.id}
-                      className={selectedArtist === artist.id ? "bg-gray-800" : ""}
+                      className={selectedArtist === artist.id ? "bg-bruised-purple/20" : ""}
                       onClick={() => onArtistChange(artist.id)}
                     >
                       <span className="flex-1 truncate">{artist.name}</span>
-                      {selectedArtist === artist.id && <Check className="h-4 w-4 ml-2" />}
+                      {selectedArtist === artist.id && <Check className="h-4 w-4 ml-2 text-teardrop" />}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -73,27 +76,30 @@ export function FilterPanel({
             <div className="w-full sm:w-auto">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full sm:w-[200px] justify-between">
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-[200px] justify-between bg-deep-blue/50 border-bruised-purple/30 text-faded-white"
+                  >
                     <span className="truncate">{selectedCategoryName}</span>
-                    <ChevronDown className="h-4 w-4 ml-2" />
+                    <ChevronDown className="h-4 w-4 ml-2 text-teardrop" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-[200px] bg-gray-900 border-gray-800 text-white">
+                <DropdownMenuContent className="w-[200px] bg-deep-blue border-bruised-purple/30 text-faded-white">
                   <DropdownMenuItem
-                    className={!selectedCategory ? "bg-gray-800" : ""}
+                    className={!selectedCategory ? "bg-bruised-purple/20" : ""}
                     onClick={() => onCategoryChange(null)}
                   >
                     <span className="flex-1">All Categories</span>
-                    {!selectedCategory && <Check className="h-4 w-4 ml-2" />}
+                    {!selectedCategory && <Check className="h-4 w-4 ml-2 text-teardrop" />}
                   </DropdownMenuItem>
                   {categories.map((category) => (
                     <DropdownMenuItem
                       key={category.id}
-                      className={selectedCategory === category.id ? "bg-gray-800" : ""}
+                      className={selectedCategory === category.id ? "bg-bruised-purple/20" : ""}
                       onClick={() => onCategoryChange(category.id)}
                     >
                       <span className="flex-1 truncate">{category.name}</span>
-                      {selectedCategory === category.id && <Check className="h-4 w-4 ml-2" />}
+                      {selectedCategory === category.id && <Check className="h-4 w-4 ml-2 text-teardrop" />}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>

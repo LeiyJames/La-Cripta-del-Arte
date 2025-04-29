@@ -14,7 +14,7 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
 
   return (
     <div
-      className="group relative overflow-hidden rounded-lg cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(0,255,255,0.5)]"
+      className="group relative overflow-hidden rounded-md cursor-pointer transform transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(92,84,112,0.3)] cracked-overlay"
       onClick={onClick}
     >
       <div className="aspect-[3/4] w-full relative">
@@ -23,17 +23,17 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
           alt={artwork.title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className={`object-cover transition-all duration-500 ${
+          className={`object-cover transition-all duration-700 filter brightness-90 ${
             isLoading ? "opacity-0" : "opacity-100"
-          } group-hover:scale-110`}
+          } group-hover:brightness-100 group-hover:scale-105`}
           onLoad={() => setIsLoading(false)}
         />
-        {isLoading && <div className="absolute inset-0 bg-gray-800 animate-pulse" />}
+        {isLoading && <div className="absolute inset-0 bg-deep-blue animate-pulse" />}
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-        <h3 className="text-white font-bold truncate">{artwork.title}</h3>
-        {artwork.artist && <p className="text-gray-300 text-sm truncate">{artwork.artist.name}</p>}
+      <div className="absolute inset-0 bg-gradient-to-t from-smudged-black via-transparent to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
+      <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500 opacity-90 group-hover:opacity-100">
+        <h3 className="text-faded-white font-playfair font-light text-lg truncate">{artwork.title}</h3>
+        {artwork.artist && <p className="text-teardrop text-sm truncate opacity-80">{artwork.artist.name}</p>}
       </div>
     </div>
   )

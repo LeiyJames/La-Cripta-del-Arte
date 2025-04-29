@@ -1,19 +1,19 @@
 import type React from "react"
 import "./globals.css"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Playfair_Display } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
-import { setupApp } from "./setup"
 
-// Run setup
-setupApp().catch(console.error)
-
-const inter = Inter({ subsets: ["latin"] })
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-playfair",
+})
 
 export const metadata: Metadata = {
-  title: "Modern Art Gallery",
-  description: "A creative, modern artwork gallery website with a dark theme and neon accents",
-  keywords: ["art", "gallery", "modern", "digital", "painting", "sculpture", "photography"],
+  title: "Echoes of Sorrow | Art Gallery",
+  description: "A gallery of sorrowful, poetic art focused on grief, longing, and emotional rawness",
+  keywords: ["art", "gallery", "sorrow", "grief", "emotion", "paintings"],
     generator: 'v0.dev'
 }
 
@@ -24,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-gray-950 text-white antialiased`}>
+      <body className={`${playfair.variable} bg-smudged-black text-faded-white antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           {children}
         </ThemeProvider>

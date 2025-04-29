@@ -24,9 +24,9 @@ export function Gallery({ artworks }: GalleryProps) {
 
   return (
     <>
-      <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 p-4">
+      <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6 p-6 max-w-7xl mx-auto">
         {artworks.map((artwork) => (
-          <div key={artwork.id} className="break-inside-avoid mb-4">
+          <div key={artwork.id} className="break-inside-avoid mb-6">
             <ArtworkCard artwork={artwork} onClick={() => handleArtworkClick(artwork)} />
           </div>
         ))}

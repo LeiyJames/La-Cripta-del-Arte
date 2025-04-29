@@ -1,41 +1,45 @@
-import { createClientComponentClient } from "./supabase"
-
 export async function uploadArtworkImage(file: File) {
-  const supabase = createClientComponentClient()
+  // Create a FormData object to send the file
+  const formData = new FormData()
+  formData.append("file", file)
 
-  // Create a unique file name
-  const fileExt = file.name.split(".").pop()
-  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`
-  const storagePath = `${fileName}`
-
-  // Upload the file to Supabase Storage
-  const { data, error } = await supabase.storage.from("artworks").upload(storagePath, file, {
-    cacheControl: "3600",
-    upsert: false,
+  // Send the file to our API route
+  const response = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
   })
 
-  if (error) {
-    console.error("Error uploading file:", error)
-    throw error
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.error || "Failed to upload file")
   }
 
-  // Get the public URL
-  const { data: publicUrlData } = supabase.storage.from("artworks").getPublicUrl(storagePath)
+  const data = await response.json()
+
+  if (!data.success) {
+    throw new Error(data.error || "Failed to upload file")
+  }
 
   return {
-    url: publicUrlData.publicUrl,
-    path: storagePath,
+    url: data.url,
+    path: data.path,
   }
 }
 
 export async function deleteArtworkImage(path: string) {
-  const supabase = createClientComponentClient()
+  const response = await fetch(`/api/upload?path=${encodeURIComponent(path)}`, {
+    method: "DELETE",
+  })
 
-  const { error } = await supabase.storage.from("artworks").remove([path])
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.error || "Failed to delete file")
+  }
 
-  if (error) {
-    console.error("Error deleting file:", error)
-    throw error
+  const data = await response.json()
+
+  if (!data.success) {
+    throw new Error(data.error || "Failed to delete file")
   }
 
   return { success: true }

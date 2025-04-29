@@ -1,21 +1,24 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import type { Artwork, Artist, Category } from "@/types"
 import { Gallery } from "@/components/gallery"
 import { FilterPanel } from "@/components/filter-panel"
 import { UploadForm } from "@/components/upload-form"
+import { FeaturedArtwork } from "@/components/featured-artwork"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { Plus, Settings } from "lucide-react"
 import { Toaster } from "@/components/ui/toaster"
 
 interface ClientPageProps {
   initialArtworks: Artwork[]
   artists: Artist[]
   categories: Category[]
+  featuredArtworks: Artwork[]
 }
 
-export default function ClientPage({ initialArtworks, artists, categories }: ClientPageProps) {
+export default function ClientPage({ initialArtworks, artists, categories, featuredArtworks }: ClientPageProps) {
   const [selectedArtist, setSelectedArtist] = useState<number | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
   const [isUploadFormOpen, setIsUploadFormOpen] = useState(false)
@@ -29,16 +32,28 @@ export default function ClientPage({ initialArtworks, artists, categories }: Cli
 
   return (
     <div className="relative z-0">
-      <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-20">
+      <header className="bg-smudged-black/80 backdrop-blur-md border-b border-bruised-purple/20 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-electric-blue to-magenta bg-clip-text text-transparent">
-            Modern Art Gallery
-          </h1>
-          <Button onClick={() => setIsUploadFormOpen(true)} className="bg-electric-blue hover:bg-electric-blue/80">
-            <Plus className="mr-2 h-4 w-4" /> Upload Artwork
-          </Button>
+          <h1 className="text-2xl md:text-3xl font-playfair font-light sorrowful-gradient">La Cripta del Arte</h1>
+          <div className="flex items-center space-x-2">
+            <Button
+              asChild
+              variant="outline"
+              size="icon"
+              className="hidden sm:flex border-bruised-purple/30 bg-transparent"
+            >
+              <Link href="/admin" aria-label="Admin Dashboard">
+                <Settings className="h-4 w-4 text-teardrop" />
+              </Link>
+            </Button>
+            <Button onClick={() => setIsUploadFormOpen(true)} className="btn-sorrowful">
+              <Plus className="mr-2 h-4 w-4" /> Upload Artwork
+            </Button>
+          </div>
         </div>
       </header>
+
+      {featuredArtworks.length > 0 && <FeaturedArtwork artwork={featuredArtworks[0]} />}
 
       <FilterPanel
         artists={artists}
@@ -53,11 +68,11 @@ export default function ClientPage({ initialArtworks, artists, categories }: Cli
         <Gallery artworks={filteredArtworks} />
       ) : (
         <div className="flex flex-col items-center justify-center p-12 text-center">
-          <h2 className="text-xl font-semibold mb-2">No artworks found</h2>
-          <p className="text-gray-400 mb-6">
+          <h2 className="text-xl font-playfair font-light mb-2 sorrowful-gradient">No artworks found</h2>
+          <p className="text-faded-white opacity-70 mb-6">
             No artworks match your current filter criteria. Try changing your filters or upload a new artwork.
           </p>
-          <Button onClick={() => setIsUploadFormOpen(true)} className="bg-electric-blue hover:bg-electric-blue/80">
+          <Button onClick={() => setIsUploadFormOpen(true)} className="btn-sorrowful">
             <Plus className="mr-2 h-4 w-4" /> Upload Artwork
           </Button>
         </div>

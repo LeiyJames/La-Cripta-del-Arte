@@ -5,7 +5,6 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { uploadArtworkImage } from "@/lib/storage-utils"
-import { createArtwork } from "@/app/actions"
 import type { Artist, Category } from "@/types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/components/ui/use-toast"
-import { Upload } from "lucide-react"
+import { Upload, Loader2 } from "lucide-react"
 
 interface UploadFormProps {
   isOpen: boolean
@@ -26,7 +25,7 @@ interface UploadFormProps {
 export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormProps) {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
-  const [artistId, setArtistId] = useState<string>("")
+  const [artistName, setArtistName] = useState("")
   const [categoryId, setCategoryId] = useState<string>("")
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -52,7 +51,7 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!title || !artistId || !categoryId || !file) {
+    if (!title || !artistName || !categoryId || !file) {
       toast({
         title: "Missing fields",
         description: "Please fill in all required fields and select an image.",
@@ -64,28 +63,60 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
     setIsUploading(true)
 
     try {
-      // Upload image to Supabase Storage
+      // First, get or create the artist
+      const artistResponse = await fetch("/api/artists", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: artistName.trim(),
+        }),
+      })
+
+      if (!artistResponse.ok) {
+        const errorData = await artistResponse.json()
+        throw new Error(errorData.error || "Failed to create artist")
+      }
+
+      const artistData = await artistResponse.json()
+      const artistId = artistData.artist.id
+
+      // Upload image to Supabase Storage using our API route
       const { url, path } = await uploadArtworkImage(file)
 
-      // Create artwork record in database
-      await createArtwork({
-        title,
-        description,
-        artist_id: Number.parseInt(artistId),
-        category_id: Number.parseInt(categoryId),
-        image_url: url,
-        storage_path: path,
+      // Create artwork record in database using our API route
+      const response = await fetch("/api/artworks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          artist_id: artistId,
+          category_id: Number.parseInt(categoryId),
+          image_url: url,
+          storage_path: path,
+        }),
       })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to create artwork")
+      }
 
       toast({
         title: "Artwork uploaded",
-        description: "Your artwork has been successfully uploaded.",
+        description: artistData.created
+          ? `Your artwork has been uploaded with new artist "${artistName}".`
+          : "Your artwork has been successfully uploaded.",
       })
 
       // Reset form and close dialog
       setTitle("")
       setDescription("")
-      setArtistId("")
+      setArtistName("")
       setCategoryId("")
       setFile(null)
       setPreviewUrl(null)
@@ -97,7 +128,8 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
       console.error("Error uploading artwork:", error)
       toast({
         title: "Upload failed",
-        description: "There was an error uploading your artwork. Please try again.",
+        description:
+          error instanceof Error ? error.message : "There was an error uploading your artwork. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -107,59 +139,66 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-gray-900 border border-gray-800 text-white">
+      <DialogContent className="max-w-2xl bg-deep-blue/90 backdrop-blur-md border border-bruised-purple/30 text-faded-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-white">Upload Artwork</DialogTitle>
+          <DialogTitle className="text-2xl font-playfair font-light sorrowful-gradient">Upload Artwork</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title" className="text-teardrop">
+                  Title *
+                </Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Enter artwork title"
                   required
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="text-teardrop">
+                  Description
+                </Label>
                 <Textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Enter artwork description"
-                  className="bg-gray-800 border-gray-700 min-h-[120px]"
+                  className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white min-h-[120px]"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="artist">Artist *</Label>
-                <Select value={artistId} onValueChange={setArtistId} required>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
-                    <SelectValue placeholder="Select artist" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
-                    {artists.map((artist) => (
-                      <SelectItem key={artist.id} value={artist.id.toString()}>
-                        {artist.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="artist" className="text-teardrop">
+                  Artist Name *
+                </Label>
+                <Input
+                  id="artist"
+                  value={artistName}
+                  onChange={(e) => setArtistName(e.target.value)}
+                  placeholder="Enter artist name"
+                  required
+                  className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white"
+                />
+                <p className="text-xs text-faded-white opacity-60">
+                  If the artist doesn't exist, a new artist will be created.
+                </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="category">Category *</Label>
+                <Label htmlFor="category" className="text-teardrop">
+                  Category *
+                </Label>
                 <Select value={categoryId} onValueChange={setCategoryId} required>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
+                  <SelectTrigger className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectContent className="bg-deep-blue border-bruised-purple/30 text-faded-white">
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id.toString()}>
                         {category.name}
@@ -172,11 +211,13 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="image">Artwork Image *</Label>
+                <Label htmlFor="image" className="text-teardrop">
+                  Artwork Image *
+                </Label>
                 <div className="flex items-center justify-center w-full">
                   <label
                     htmlFor="image-upload"
-                    className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-800 border-gray-700 hover:bg-gray-700"
+                    className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md cursor-pointer bg-smudged-black/50 border-bruised-purple/30 hover:bg-deep-blue/50"
                   >
                     {previewUrl ? (
                       <div className="relative w-full h-full">
@@ -188,11 +229,11 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
                       </div>
                     ) : (
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <Upload className="w-10 h-10 mb-3 text-gray-400" />
-                        <p className="mb-2 text-sm text-gray-400">
+                        <Upload className="w-10 h-10 mb-3 text-teardrop opacity-70" />
+                        <p className="mb-2 text-sm text-faded-white opacity-70">
                           <span className="font-semibold">Click to upload</span> or drag and drop
                         </p>
-                        <p className="text-xs text-gray-400">PNG, JPG or WEBP (MAX. 10MB)</p>
+                        <p className="text-xs text-faded-white opacity-60">PNG, JPG or WEBP (MAX. 10MB)</p>
                       </div>
                     )}
                     <input
@@ -214,13 +255,20 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-gray-700"
+              className="border-bruised-purple/30 bg-transparent text-faded-white hover:bg-deep-blue/50"
               disabled={isUploading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isUploading} className="bg-electric-blue hover:bg-electric-blue/80">
-              {isUploading ? "Uploading..." : "Upload Artwork"}
+            <Button type="submit" disabled={isUploading} className="btn-sorrowful">
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                "Upload Artwork"
+              )}
             </Button>
           </DialogFooter>
         </form>
