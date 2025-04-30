@@ -11,7 +11,7 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: "Echoes of Sorrow | Art Gallery",
+  title: "La Cripta del Artey",
   description: "A gallery of sorrowful, poetic art focused on grief, longing, and emotional rawness",
   keywords: ["art", "gallery", "sorrow", "grief", "emotion", "paintings"],
     generator: 'v0.dev'
