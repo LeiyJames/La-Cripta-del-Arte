@@ -169,3 +169,55 @@
 .card-sorrowful {
   @apply bg-deep-blue/50 border border-bruised-purple/30 backdrop-blur-sm;
 }
+
+/* Form focus styles */
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  @apply ring-1 ring-bruised-purple border-bruised-purple/50;
+}
+
+/* Custom scrollbar for the modal */
+.modal-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-track {
+  background: rgba(53, 47, 68, 0.2);
+  border-radius: 3px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(92, 84, 112, 0.4);
+  border-radius: 3px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(92, 84, 112, 0.6);
+}
+
+/* Drag and drop styles */
+.drag-active {
+  @apply border-teardrop bg-bruised-purple/20;
+}
+
+.btn-sorrowful:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Image preview animation */
+.image-preview-enter {
+  @apply opacity-0 scale-95;
+}
+
+.image-preview-enter-active {
+  @apply opacity-100 scale-100 transition-all duration-300;
+}
+
+.image-preview-exit {
+  @apply opacity-100 scale-100;
+}
+
+.image-preview-exit-active {
+  @apply opacity-0 scale-95 transition-all duration-300;
+}
