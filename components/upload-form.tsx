@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/components/ui/use-toast"
 import { Upload, Loader2 } from "lucide-react"
+import { useMobile } from "@/hooks/use-mobile"
 
 interface UploadFormProps {
   isOpen: boolean
@@ -33,6 +34,7 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
 
   const router = useRouter()
   const { toast } = useToast()
+  const isMobile = useMobile()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
@@ -139,15 +141,19 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-deep-blue/90 backdrop-blur-md border border-bruised-purple/30 text-faded-white">
+      <DialogContent
+        className={`${isMobile ? "w-[95%] p-4" : "max-w-2xl p-6"} bg-deep-blue/90 backdrop-blur-md border border-bruised-purple/30 text-faded-white`}
+      >
         <DialogHeader>
-          <DialogTitle className="text-2xl font-playfair font-light sorrowful-gradient">Upload Artwork</DialogTitle>
+          <DialogTitle className="text-xl sm:text-2xl font-playfair font-light sorrowful-gradient text-center">
+            Upload Artwork
+          </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title" className="text-teardrop">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 mt-2">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="title" className="text-teardrop text-sm sm:text-base">
                   Title *
                 </Label>
                 <Input
@@ -156,12 +162,12 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Enter artwork title"
                   required
-                  className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white"
+                  className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white h-9 sm:h-10"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-teardrop">
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="description" className="text-teardrop text-sm sm:text-base">
                   Description
                 </Label>
                 <Textarea
@@ -169,12 +175,12 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Enter artwork description"
-                  className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white min-h-[120px]"
+                  className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white min-h-[80px] sm:min-h-[120px]"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="artist" className="text-teardrop">
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="artist" className="text-teardrop text-sm sm:text-base">
                   Artist Name *
                 </Label>
                 <Input
@@ -183,19 +189,19 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
                   onChange={(e) => setArtistName(e.target.value)}
                   placeholder="Enter artist name"
                   required
-                  className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white"
+                  className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white h-9 sm:h-10"
                 />
-                <p className="text-xs text-faded-white opacity-60">
+                <p className="text-xs text-faded-white opacity-60 mt-1">
                   If the artist doesn't exist, a new artist will be created.
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="category" className="text-teardrop">
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="category" className="text-teardrop text-sm sm:text-base">
                   Category *
                 </Label>
                 <Select value={categoryId} onValueChange={setCategoryId} required>
-                  <SelectTrigger className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white">
+                  <SelectTrigger className="bg-smudged-black/50 border-bruised-purple/30 text-faded-white h-9 sm:h-10">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent className="bg-deep-blue border-bruised-purple/30 text-faded-white">
@@ -209,58 +215,57 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="image" className="text-teardrop">
-                  Artwork Image *
-                </Label>
-                <div className="flex items-center justify-center w-full">
-                  <label
-                    htmlFor="image-upload"
-                    className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md cursor-pointer bg-smudged-black/50 border-bruised-purple/30 hover:bg-deep-blue/50"
-                  >
-                    {previewUrl ? (
-                      <div className="relative w-full h-full">
-                        <img
-                          src={previewUrl || "/placeholder.svg"}
-                          alt="Preview"
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <Upload className="w-10 h-10 mb-3 text-teardrop opacity-70" />
-                        <p className="mb-2 text-sm text-faded-white opacity-70">
-                          <span className="font-semibold">Click to upload</span> or drag and drop
-                        </p>
-                        <p className="text-xs text-faded-white opacity-60">PNG, JPG or WEBP (MAX. 10MB)</p>
-                      </div>
-                    )}
-                    <input
-                      id="image-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleFileChange}
-                      required
-                    />
-                  </label>
-                </div>
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="image" className="text-teardrop text-sm sm:text-base">
+                Artwork Image *
+              </Label>
+              <div className="flex items-center justify-center w-full">
+                <label
+                  htmlFor="image-upload"
+                  className="flex flex-col items-center justify-center w-full h-48 sm:h-64 border-2 border-dashed rounded-md cursor-pointer bg-smudged-black/50 border-bruised-purple/30 hover:bg-deep-blue/50 transition-colors"
+                >
+                  {previewUrl ? (
+                    <div className="relative w-full h-full">
+                      <img
+                        src={previewUrl || "/placeholder.svg"}
+                        alt="Preview"
+                        className="w-full h-full object-contain p-2"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6 px-2 text-center">
+                      <Upload className="w-8 h-8 sm:w-10 sm:h-10 mb-2 sm:mb-3 text-teardrop opacity-70" />
+                      <p className="mb-1 sm:mb-2 text-sm text-faded-white opacity-70">
+                        <span className="font-semibold">Tap to upload</span>
+                        <span className="hidden sm:inline"> or drag and drop</span>
+                      </p>
+                      <p className="text-xs text-faded-white opacity-60">PNG, JPG or WEBP (MAX. 10MB)</p>
+                    </div>
+                  )}
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    required
+                  />
+                </label>
               </div>
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0 mt-4 sm:mt-0">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-bruised-purple/30 bg-transparent text-faded-white hover:bg-deep-blue/50"
+              className="w-full sm:w-auto border-bruised-purple/30 bg-transparent text-faded-white hover:bg-deep-blue/50"
               disabled={isUploading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isUploading} className="btn-sorrowful">
+            <Button type="submit" disabled={isUploading} className="w-full sm:w-auto btn-sorrowful">
               {isUploading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
