@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import Image from "next/image"
 import { uploadArtworkImage } from "@/lib/storage-utils"
 import type { Artist, Category } from "@/types"
 import { Button } from "@/components/ui/button"
@@ -373,16 +372,22 @@ export function UploadForm({ isOpen, onClose, artists, categories }: UploadFormP
                   onDrop={handleDrop}
                 >
                   {previewUrl ? (
-                    <div className="relative w-full aspect-square max-h-[400px] rounded-md overflow-hidden bg-smudged-black/70">
-                      <Image src={previewUrl || "/placeholder.svg"} alt="Preview" fill className="object-contain" />
-                      <button
-                        type="button"
-                        onClick={handleRemoveImage}
-                        className="absolute top-2 right-2 bg-deep-blue/80 p-1.5 rounded-full hover:bg-bruised-purple/80 transition-colors"
-                        aria-label="Remove image"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
+                    <div className="relative w-full rounded-md overflow-hidden bg-transparent">
+                      <div className="relative aspect-auto max-h-[400px] flex items-center justify-center">
+                        <img
+                          src={previewUrl || "/placeholder.svg"}
+                          alt="Preview"
+                          className="max-w-full max-h-[400px] object-contain clean-image"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="absolute top-2 right-2 bg-deep-blue/80 p-1.5 rounded-full hover:bg-bruised-purple/80 transition-colors"
+                          aria-label="Remove image"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div

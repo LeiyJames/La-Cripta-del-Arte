@@ -221,3 +221,33 @@
 .image-preview-exit-active {
   @apply opacity-0 scale-95 transition-all duration-300;
 }
+
+/* Clean image preview styles */
+.upload-image-preview {
+  background-color: transparent;
+  background-image: none;
+}
+
+.upload-image-preview img {
+  margin: 0 auto;
+  display: block;
+}
+
+/* Improve will-change for performance */
+.will-change-transform {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Remove grid overlay from image preview */
+.clean-image {
+  position: relative;
+  z-index: 10;
+}
+
+/* Override the cracked overlay for image previews */
+.clean-image::after {
+  display: none !important;
+  content: none !important;
+  background-image: none !important;
+}
