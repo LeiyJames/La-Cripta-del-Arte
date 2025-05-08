@@ -37,4 +37,4 @@ A dark-themed digital art gallery and portfolio platform for showcasing contempo
 
 1. Clone repo:
    ```bash
-   git clone https://github.com/your-username/La-Cripta-del-Arte.git
+   git clone https://github.com/LeiyJames/La-Cripta-del-Arte.git
